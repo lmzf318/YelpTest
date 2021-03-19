@@ -4,6 +4,11 @@ import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
 
+/**
+ * Business model from the Yelp v3 API.
+ * Update this file to include any fields you feel are missing.
+ * @see <a href=https://www.yelp.ca/developers/documentation/v3/business_search>Yelp API Business Search</a>
+ */
 public class Business {
     @SerializedName("id")
     private String id;
