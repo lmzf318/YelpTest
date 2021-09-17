@@ -93,6 +93,9 @@ public class MainListAdapter extends BaseExpandableListAdapter {
     }
 
     protected void submit(List<Business> input) {
+        catMap.clear();
+        groupList.clear();
+
         if (input != null) {
             for (Business business : input) {
                 for (Category category : business.getCategories()) {
@@ -104,8 +107,10 @@ public class MainListAdapter extends BaseExpandableListAdapter {
                     catMap.get(category.getAlias()).add(business);
                 }
             }
-            notifyDataSetChanged();
         }
+
+        notifyDataSetChanged();
+
     }
 
     @RequiresApi(api = Build.VERSION_CODES.N)
