@@ -13,15 +13,16 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class YelpService {
+    private static Retrofit retrofit = new Retrofit.Builder()
+            .client(new OkHttpClient.Builder()
+                    .addInterceptor(new ApiKeyInterceptor())
+                    .build())
+            .baseUrl("https://api.yelp.com")
+            .addConverterFactory(GsonConverterFactory.create())
+            .build();
 
-    public Retrofit getRetrofitInstance() {
-        return new Retrofit.Builder()
-                .client(new OkHttpClient.Builder()
-                        .addInterceptor(new ApiKeyInterceptor())
-                        .build())
-                .baseUrl("https://api.yelp.com")
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
+    public static <S>S createService(Class<S> serviceClass) {
+        return retrofit.create(serviceClass);
     }
 
     private static class ApiKeyInterceptor implements Interceptor {

@@ -6,6 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
 
+import com.rbc.yelp.R;
 import com.rbc.yelp.databinding.MainListCatItemBinding;
 import com.rbc.yelp.databinding.MainListSubItemBinding;
 import com.rbc.yelp.services.models.Business;
@@ -69,7 +70,12 @@ public class MainListAdapter extends BaseExpandableListAdapter {
     public View getGroupView(int groupPosition, boolean isExpanded, View convertView, ViewGroup parent) {
         MainListCatItemBinding binding = MainListCatItemBinding.inflate(LayoutInflater.from(parent.getContext()),parent,false);
         binding.catItemTitle.setText(groupList.get(groupPosition));
-        binding.catItemCount.setText(getChildrenCount(groupPosition));
+        binding.catItemCount.setText(String.valueOf(getChildrenCount(groupPosition)));
+        if (isExpanded) {
+            binding.catItemIndicator.setImageResource(R.drawable.ic_expand_less_black_24dp);
+        } else {
+            binding.catItemIndicator.setImageResource(R.drawable.ic_expand_more_black_24dp);
+        }
         return binding.getRoot();
     }
 
@@ -97,6 +103,7 @@ public class MainListAdapter extends BaseExpandableListAdapter {
                 catMap.get(category.getAlias()).add(business);
             }
         }
+        notifyDataSetChanged();
     }
 
     @RequiresApi(api = Build.VERSION_CODES.N)

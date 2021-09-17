@@ -20,8 +20,7 @@ public class YelpTest {
     @Test
     public void test_yelp_api() throws IOException {
         Call<SearchResult> resultCall = new YelpService()
-                .getRetrofitInstance()
-                .create(YelpApi.class)
+                .createService(YelpApi.class)
                 .search("Sushi", "Toronto");
         Response<SearchResult> res = resultCall.execute();
         assertThat(res.code(), is(200));
