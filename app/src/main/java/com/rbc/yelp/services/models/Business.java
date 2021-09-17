@@ -17,6 +17,12 @@ public class Business {
     @SerializedName("categories")
     private List<Category> categories;
 
+    // newly added fields
+    @SerializedName("rating")
+    private double rating;
+    @SerializedName("image_url")
+    private String image_url;
+
     public String getId() {
         return id;
     }
@@ -27,5 +33,13 @@ public class Business {
 
     public List<Category> getCategories() {
         return categories;
+    }
+
+    public double getRating() {
+        return rating;
+    }
+
+    public String getImage_url() {
+        return image_url;
     }
 }

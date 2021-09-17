@@ -1,15 +1,17 @@
 package com.rbc.yelp.ui.main;
 
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.widget.SearchView;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 import android.Manifest;
+import android.app.AlertDialog;
 import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
+import android.os.Build;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -22,9 +24,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.bumptech.glide.Glide;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
+import com.rbc.yelp.R;
 import com.rbc.yelp.databinding.MainFragmentBinding;
+import com.rbc.yelp.databinding.MainListDetailItemBinding;
+import com.rbc.yelp.services.models.Business;
+import com.rbc.yelp.services.models.Category;
 
 import java.io.IOException;
 import java.util.List;
@@ -55,6 +62,7 @@ public class MainFragment extends Fragment {
         return binding.getRoot();
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -66,6 +74,7 @@ public class MainFragment extends Fragment {
         binding.listviewResult.setAdapter(mainListAdapter);
         binding.listviewResult.setOnChildClickListener((parent, v, groupPosition, childPosition, id) -> {
             Log.d(TAG, "Clicked on group " + groupPosition + " and child " + childPosition);
+            showDetails(groupPosition, childPosition);
             return true;
         });
 
@@ -75,8 +84,8 @@ public class MainFragment extends Fragment {
                 Log.d(TAG, "Query term " + query + ", city " + city);
                 mainViewModel.get(query, city).observe(requireActivity(), searchResult -> {
                     // collapse list to let user know that data has changed
-                    int count =  mainListAdapter.getGroupCount();
-                    for (int i = 0; i <count ; i++) binding.listviewResult.collapseGroup(i);
+                    int count = mainListAdapter.getGroupCount();
+                    for (int i = 0; i < count; i++) binding.listviewResult.collapseGroup(i);
                     // notify list adapter to refresh UI
                     mainListAdapter.submit(searchResult.getBusinesses());
                 });
@@ -140,5 +149,34 @@ public class MainFragment extends Fragment {
                 }
             });
         }
+    }
+
+    // FIXME separate to a standalone src file
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    private void showDetails(int groupPosition, int childPosition) {
+        MainListDetailItemBinding mainListDetailItemBinding = MainListDetailItemBinding.inflate(LayoutInflater.from(getContext()));
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext(), R.style.my_dialog);
+        builder.setView(mainListDetailItemBinding.getRoot());
+
+        Business business = (Business) mainListAdapter.getChild(groupPosition, childPosition);
+        mainListDetailItemBinding.detailItemName.setText(business.getName());
+        mainListDetailItemBinding.detailItemCategory.setText(formCategory(business.getCategories()));
+        mainListDetailItemBinding.detailItemRating.setText(String.valueOf(business.getRating()));
+        Glide.with(this).load(business.getImage_url()).into(mainListDetailItemBinding.detailItemImg);
+
+        builder.create().show();
+    }
+
+    // FIXME separate to a util class
+    private String formCategory(List<Category> list) {
+        StringBuilder ret = new StringBuilder();
+        for (Category category : list) {
+            ret.append(category.getTitle());
+            ret.append(",");
+        }
+        if (ret.charAt(ret.length()-1) == ',') {
+            ret.deleteCharAt(ret.length() - 1);
+        }
+        return ret.toString();
     }
 }

@@ -46,7 +46,7 @@ public class MainListAdapter extends BaseExpandableListAdapter {
     @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     public Object getChild(int groupPosition, int childPosition) {
-        return getChildAsBusiness(groupPosition,childPosition);
+        return getChildAsBusiness(groupPosition, childPosition);
     }
 
     @Override
@@ -68,7 +68,7 @@ public class MainListAdapter extends BaseExpandableListAdapter {
     @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     public View getGroupView(int groupPosition, boolean isExpanded, View convertView, ViewGroup parent) {
-        MainListCatItemBinding binding = MainListCatItemBinding.inflate(LayoutInflater.from(parent.getContext()),parent,false);
+        MainListCatItemBinding binding = MainListCatItemBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false);
         binding.catItemTitle.setText(groupList.get(groupPosition));
         binding.catItemCount.setText(String.valueOf(getChildrenCount(groupPosition)));
         if (isExpanded) {
@@ -82,8 +82,8 @@ public class MainListAdapter extends BaseExpandableListAdapter {
     @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     public View getChildView(int groupPosition, int childPosition, boolean isExpanded, View convertView, ViewGroup parent) {
-        MainListSubItemBinding binding = MainListSubItemBinding.inflate(LayoutInflater.from(parent.getContext()),parent,false);
-        binding.subItemText.setText(getChildAsBusiness(groupPosition,childPosition).getName());
+        MainListSubItemBinding binding = MainListSubItemBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false);
+        binding.subItemText.setText(getChildAsBusiness(groupPosition, childPosition).getName());
         return binding.getRoot();
     }
 
@@ -93,21 +93,23 @@ public class MainListAdapter extends BaseExpandableListAdapter {
     }
 
     protected void submit(List<Business> input) {
-        for (Business business : input) {
-            for (Category category : business.getCategories()) {
-                // add business to each category list
-                if (!catMap.containsKey(category.getAlias())) {
-                    catMap.put(category.getAlias(), new ArrayList<>());
-                    groupList.add(category.getAlias());
+        if (input != null) {
+            for (Business business : input) {
+                for (Category category : business.getCategories()) {
+                    // add business to each category list
+                    if (!catMap.containsKey(category.getAlias())) {
+                        catMap.put(category.getAlias(), new ArrayList<>());
+                        groupList.add(category.getAlias());
+                    }
+                    catMap.get(category.getAlias()).add(business);
                 }
-                catMap.get(category.getAlias()).add(business);
             }
+            notifyDataSetChanged();
         }
-        notifyDataSetChanged();
     }
 
     @RequiresApi(api = Build.VERSION_CODES.N)
-    private Business getChildAsBusiness(int groupPosition, int childPosition){
+    private Business getChildAsBusiness(int groupPosition, int childPosition) {
         return Objects.requireNonNull(catMap.getOrDefault(groupList.get(groupPosition), new ArrayList<>())).get(childPosition);
     }
 }
