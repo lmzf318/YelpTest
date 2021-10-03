@@ -14,13 +14,17 @@ public class MainViewModel extends ViewModel {
     private MutableLiveData<SearchResult> resultMutableLiveData;
     private YelpRepository yelpRepository;
 
-    public LiveData<SearchResult> get(String term, String location) {
-        return resultMutableLiveData = yelpRepository.getSearchResult(term, location);
+    public void get(String term, String location) {
+        yelpRepository.getSearchResult(term, location);
     }
 
     public MainViewModel(){
         super();
         yelpRepository = YelpRepository.getInstance();
+        resultMutableLiveData = yelpRepository.getLiveData();
     }
 
+    public LiveData<SearchResult> getYelpSearchRepo() {
+        return resultMutableLiveData;
+    }
 }

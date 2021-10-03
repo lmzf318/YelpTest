@@ -82,13 +82,7 @@ public class MainFragment extends Fragment {
             @Override
             public boolean onQueryTextSubmit(String query) {
                 Log.d(TAG, "Query term " + query + ", city " + city);
-                mainViewModel.get(query, city).observe(requireActivity(), searchResult -> {
-                    // collapse list to let user know that data has changed
-                    int count = mainListAdapter.getGroupCount();
-                    for (int i = 0; i < count; i++) binding.listviewResult.collapseGroup(i);
-                    // notify list adapter to refresh UI
-                    mainListAdapter.submit(searchResult.getBusinesses());
-                });
+                mainViewModel.get(query, city);
                 return true;
             }
 
@@ -103,7 +97,13 @@ public class MainFragment extends Fragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         mainViewModel = new ViewModelProvider(this).get(MainViewModel.class);
-        // TODO: Use the ViewModel
+        mainViewModel.getYelpSearchRepo().observe(requireActivity(), searchResult -> {
+            // collapse list to let user know that data has changed
+            int count = mainListAdapter.getGroupCount();
+            for (int i = 0; i < count; i++) binding.listviewResult.collapseGroup(i);
+            // notify list adapter to refresh UI
+            mainListAdapter.submit(searchResult.getBusinesses());
+        });
     }
 
     private void getLocationPermission() {
